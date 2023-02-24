@@ -20,7 +20,7 @@ async function main() {
     "Crea - Aether",
     "CREAAETHER",
     [
-      "0x862E845e7ac5e021d58bb7986500B12e7c4e5bB7",
+      "0x514d5b013be80788839c58135f7eabbc68dfceb4",
       "0x6b4707c809dD7ae529a8527c0B1E4447bF80bEE8",
     ],
     [90, 10]
