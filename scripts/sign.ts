@@ -10,7 +10,7 @@ async function main() {
     sign(contractAddress, address).then((signature) => {
       const signatureObj = { signature: signature };
       fs.writeFile(
-        `./addresses/signatures_new/${address.toLocaleLowerCase()}.json`,
+        `./addresses/signatures/${address.toLocaleLowerCase()}.json`,
         JSON.stringify(signatureObj),
         function (err) {
           if (err) throw err;

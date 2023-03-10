@@ -78,8 +78,9 @@ contract CreaAether is
     uint256 public totalMaxSupply = 1111;
     uint256 private maxPerWallet = 4;
     uint256 private publicMaxPerWallet = 4;
+    uint256 private mintPassMaxPerWallet = 1;
     uint256 private teamMax = 12;
-    address private mintPass;
+    address private mintPass = 0x0000000000000000000000000000000000000000;
 
     /// @dev allowList mapping(address => minted)
     mapping (address => uint256) private walletsMinted;
@@ -87,6 +88,8 @@ contract CreaAether is
     mapping(address => uint256) private publicWalletsMinted;
     /// @dev usedMintPasses mapping(tokenId => bool)
     mapping(uint256 => bool) private usedMintPasses;
+    /// @dev mintPassMinted mapping(address => minted)
+    mapping (uint256 => uint256) private mintPassMinted;
 
     constructor(
         string memory name,
@@ -111,13 +114,15 @@ contract CreaAether is
     }
 
     /// @notice update max per wallet for each state
-    /// @dev true 'allow' or  false 'public'
+    /// @dev 0 => public, 1 => allowList, 2 => mintPass
     /// @param mintState bool
-    function updateMaxPerwallet(uint256 max, bool mintState) external onlyOwner {
-        if(mintState) {
-            maxPerWallet = max;
-        } else {
+    function updateMaxPerwallet(uint256 max, uint256 mintState) external onlyOwner {
+        if(mintState == 0) {
             publicMaxPerWallet = max;
+        } else if(mintState == 1) {
+             maxPerWallet = max;
+        } else if(mintState == 2) {
+            mintPassMaxPerWallet = max;
         }
     }
 
@@ -202,12 +207,12 @@ contract CreaAether is
         mint(msg.sender, variants);
     }
 
-    /// CreaChronos Mint Pass Mint
+    /// CreaChronos Mint Pass Claim
     /// @notice this will check if the owners owns a Chronos Mint Pass ERC 721 Token
     /// @param tokenId uint256
     /// @param variant string
 
-    function mintWithMintPass(uint256 tokenId, string memory variant) external payable {
+    function claimWithMintPass(uint256 tokenId, string memory variant) external {
         require(isMintPassMint, "Mint Pass mint is not active");
         require(totalSupply() + 1 <= totalMaxSupply, "all tokens already minted");
         require(mintPass != address(0), "Mint Pass not set");
@@ -219,6 +224,55 @@ contract CreaAether is
 
         string[] memory variants = new string[](1);
         variants[0] = variant;
+
+        mint(msg.sender, variants);
+    }
+
+    /// Mint multiple with Mint Pass
+    /// @notice this will check if the owners owns a Chronos Mint Pass ERC 721 Token
+    /// @param tokenId uint256
+    /// @param variants string[]
+    function mintWithMintPass(uint256 tokenId, string[] memory variants) external payable
+    nonReentrant {
+        require(isMintPassMint, "Mint Pass mint is not active");
+
+        uint256 count = variants.length;
+
+        require(totalSupply() + 1 <= totalMaxSupply, "all tokens already minted");
+        require(mintPass != address(0), "Mint Pass not set");
+        require(IERC721A(mintPass).ownerOf(tokenId) == msg.sender, "You dont own this token");
+        require(count <= mintPassMaxPerWallet - mintPassMinted[tokenId], "Maximum per wallet exceeded");
+        require(msg.value == count * allowListPrice, "wrong eth sent");
+
+        mintPassMinted[tokenId] += count;
+        mint(msg.sender, variants);
+    }
+
+
+    /// Claim with mint pass multiple tokens
+    /// @notice this will check if the owners owns a Chronos Mint Pass ERC 721 Token
+    /// @param tokenIds uint256[]
+    /// @param variants string[]
+    function claimWithMintPassMultiple(uint256[] memory tokenIds, string[] memory variants) external {
+        require(isMintPassMint, "Mint Pass mint is not active");
+        require(mintPass != address(0), "Mint Pass not set");
+        require(tokenIds.length == variants.length, "Array length mismatch");
+
+        uint256 count = tokenIds.length;
+
+        require(totalSupply() + count <= totalMaxSupply, "all tokens already minted");
+
+        uint256 i = 0;
+        do {
+            uint256 tokenId = tokenIds[i];
+
+            require(IERC721A(mintPass).ownerOf(tokenId) == msg.sender, "You dont own this token");
+            require(!usedMintPasses[tokenId], "This token has already been used");
+
+            /// @dev we update the usage of the token
+            usedMintPasses[tokenId] = true;
+            unchecked { ++i; }
+        } while(i < count);
 
         mint(msg.sender, variants);
     }
