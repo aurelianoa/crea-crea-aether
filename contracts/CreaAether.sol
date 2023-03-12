@@ -76,7 +76,7 @@ contract CreaAether is
     uint256 public price = 0.1 ether;
     uint256 public allowListPrice = 0.08 ether;
     uint256 public totalMaxSupply = 1111;
-    uint256 private maxPerWallet = 4;
+    uint256 private maxPerWallet = 3;
     uint256 private publicMaxPerWallet = 4;
     uint256 private mintPassMaxPerWallet = 1;
     uint256 private teamMax = 12;
