@@ -307,6 +307,14 @@ contract CreaAether is
         publicMaxPerWallet - publicWalletsMinted[owner];
     }
 
+    /// get max mints left
+    /// @notice get mints left by user depending on the mint state
+    /// @param tokenId uint256
+    /// @return uint256 
+    function maxMintLeftMintPass(uint256 tokenId) external view returns (uint256) {
+        return mintPassMaxPerWallet - mintPassMinted[tokenId];
+    }
+
     /// @notice checks if the wallet is allow listed recovering from signature
     /// @param allowListed address
     /// @param _signature bytes memory

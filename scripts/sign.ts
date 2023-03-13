@@ -3,7 +3,7 @@ import sign from "./signWallet";
 import fs from "fs";
 
 async function main() {
-  const contractAddress = process.env.CONTRACT_ADDRESS_MAINNET;
+  const contractAddress = process.env.CONTRACT_ADDRESS;
   const walletAddreses = addresses;
 
   walletAddreses.forEach((address:any) => {

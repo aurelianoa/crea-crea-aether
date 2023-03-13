@@ -11,7 +11,7 @@ export default async function sign(
   );
   const arrayifyMessage = ethers.utils.arrayify(message);
   const flatSignature = await new ethers.Wallet(
-    `0x${process.env.PRIVATE_KEY_MAINNET}`
+    `0x${process.env.PRIVATE_KEY}`
   ).signMessage(arrayifyMessage);
   return flatSignature;
 }
