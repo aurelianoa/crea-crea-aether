@@ -309,18 +309,18 @@ describe("CreaAether", function () {
         beforeEach(async function () {
             await CreaAether.connect(owner).setMintState(false, true, true);
         });
-        it("addr1 can mint up to 8", async function () {
+        it("addr1 can mint up to 7", async function () {
             await CreaAether
             .connect(addr1)
-            .allowListMint(["male", "male", "male", "male"], flatSignature1, {
-                value: ethers.utils.parseEther("0.32"),
+            .allowListMint(["male", "male", "male"], flatSignature1, {
+                value: ethers.utils.parseEther("0.24"),
             });
             await CreaAether
             .connect(addr1)
             .publicMint(["female", "female", "female", "female"], {
                 value: ethers.utils.parseEther("0.4"),
             });
-            expect(await CreaAether.totalSupply()).to.equal(8);
+            expect(await CreaAether.totalSupply()).to.equal(7);
         });
     });
     describe("Max mints left", function () {

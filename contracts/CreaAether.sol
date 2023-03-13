@@ -238,7 +238,7 @@ contract CreaAether is
 
         uint256 count = variants.length;
 
-        require(totalSupply() + 1 <= totalMaxSupply, "all tokens already minted");
+        require(totalSupply() + count <= totalMaxSupply, "all tokens already minted");
         require(mintPass != address(0), "Mint Pass not set");
         require(IERC721A(mintPass).ownerOf(tokenId) == msg.sender, "You dont own this token");
         require(count <= mintPassMaxPerWallet - mintPassMinted[tokenId], "Maximum per wallet exceeded");
